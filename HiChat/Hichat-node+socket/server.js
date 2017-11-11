@@ -14,10 +14,8 @@ server.listen(8080, () => {
 });
 
 io.on('connection', (socket) => {
-    console.log('a user connected');
-
     socket.on('disconnect', () => {
-        console.log('user disconnected');
+        console.log(socket.nickname + ' disconnected');
         users.splice(socket.userIndex, 1);
         socket.broadcast.emit('system', socket.nickname, users.length, 'logout');
     });
@@ -33,7 +31,11 @@ io.on('connection', (socket) => {
             socket.emit('loginSuccess');
             io.sockets.emit('system', nickname, users.length, 'login');
         };
-    })
+    });
+
+    socket.on('postMsg', (msg) => {
+        socket.broadcast.emit('newMsg', socket.nickname, msg);
+    });
 });
 
 

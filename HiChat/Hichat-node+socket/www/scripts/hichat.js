@@ -46,10 +46,33 @@ Chat.prototype = {
         //log out and emit all other left users
         this.socket.on('system', (name, usercount, type) => {
             const msg = name + (type == 'login' ? ' joined' : ' left');
-            const p = document.createElement('p');
-            p.textContent = msg;
-            document.getElementById('historyMsg').appendChild(p);
+            Chat.prototype._displayNewMsg('system', msg, 'red');
             document.getElementById('status').textContent = usercount + (usercount > 1 ? ' users' : ' user') + ' online';
         });
+
+        document.getElementById('sendBtn').addEventListener('click', () => {
+            const msgInput = document.getElementById('messageInput');
+            const msg = msgInput.value;
+            msgInput.value = '';
+            msgInput.focus();
+            if (msg.trim().length !=0) {
+                that.socket.emit('postMsg', msg);
+                Chat.prototype._displayNewMsg('me', msg);
+            };
+        }, false);
+
+        this.socket.on('newMsg', (user, msg) => {
+            Chat.prototype._displayNewMsg(user, msg);
+        });
+    },
+
+    _displayNewMsg: (user, msg, color) => {
+        const container = document.getElementById('historyMsg');
+        const msgToDisplay = document.createElement('p');
+        const date = new Date().toTimeString().substr(0, 8);
+        msgToDisplay.style.color = color || '#000';
+        msgToDisplay.innerHTML = user + '<span class="timespan">(' + date + '): </span>' + msg;
+        container.appendChild(msgToDisplay);
+        container.scrollTop = container.scrollHeight;
     }
 };
