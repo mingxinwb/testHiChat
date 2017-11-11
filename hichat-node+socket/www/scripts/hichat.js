@@ -43,13 +43,14 @@ Chat.prototype = {
             document.getElementById('messageInput').focus();
         });
 
-        //log out and emit all other left users
+        // log out and emit all other left users
         this.socket.on('system', (name, usercount, type) => {
             const msg = name + (type == 'login' ? ' joined' : ' left');
             Chat.prototype._displayNewMsg('system', msg, 'red');
             document.getElementById('status').textContent = usercount + (usercount > 1 ? ' users' : ' user') + ' online';
         });
-
+         
+        // send msg to everyone
         document.getElementById('sendBtn').addEventListener('click', () => {
             const msgInput = document.getElementById('messageInput');
             const msg = msgInput.value;
@@ -61,9 +62,34 @@ Chat.prototype = {
             };
         }, false);
 
+        // see other's msg
         this.socket.on('newMsg', (user, msg) => {
             Chat.prototype._displayNewMsg(user, msg);
         });
+
+        // send image
+        document.getElementById('sendImage').addEventListener('change', function() {
+            if (this.files.length !=0) {
+                const file = this.files[0];
+                const reader = new FileReader();
+                if (!reader) {
+                    Chat.prototype._displayNewMsg('system', "your browser doesn\'t support file reader", 'red');
+                    this.value = '';
+                    return;
+                };
+                reader.onload = (e) => {
+                    this.value = '';
+                    that.socket.emit('img', e.target.result);
+                    Chat.prototype._displayImage('me', e.target.result);
+                };
+                reader.readAsDataURL(file);
+            };
+        }, false);
+
+        // receive image
+        this.socket.on('newImg', (user,img) => {
+            Chat.prototype._displayImage(user, img);
+        })
     },
 
     _displayNewMsg: (user, msg, color) => {
@@ -72,6 +98,17 @@ Chat.prototype = {
         const date = new Date().toTimeString().substr(0, 8);
         msgToDisplay.style.color = color || '#000';
         msgToDisplay.innerHTML = user + '<span class="timespan">(' + date + '): </span>' + msg;
+        container.appendChild(msgToDisplay);
+        container.scrollTop = container.scrollHeight;
+    },
+
+    _displayImage: (user, imgData, color) => {
+        const container = document.getElementById('historyMsg');
+        const msgToDisplay = document.createElement('p');
+        const date = new Date().toTimeString().substr(0, 8);
+        msgToDisplay.style.color = color || '#000';
+        msgToDisplay.innerHTML = user + '<span class="timespan">(' + date + '): </span> <br/>' 
+                                 + '<a href="' + imgData + '" target="_blank"><img src="' + imgData + '"/></a>';
         container.appendChild(msgToDisplay);
         container.scrollTop = container.scrollHeight;
     }

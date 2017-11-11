@@ -36,6 +36,10 @@ io.on('connection', (socket) => {
     socket.on('postMsg', (msg) => {
         socket.broadcast.emit('newMsg', socket.nickname, msg);
     });
+
+    socket.on('img', (imgData) => {
+        socket.broadcast.emit('newImg', socket.nickname, imgData);
+    });
 });
 
 
