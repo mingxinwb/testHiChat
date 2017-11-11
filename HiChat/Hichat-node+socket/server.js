@@ -18,6 +18,8 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
         console.log('user disconnected');
+        users.splice(socket.userIndex, 1);
+        socket.broadcast.emit('system', socket.nickname, users.length, 'logout');
     });
 
     socket.on('login', (nickname) => {
@@ -29,7 +31,7 @@ io.on('connection', (socket) => {
             socket.nickname = nickname;
             users.push(nickname);
             socket.emit('loginSuccess');
-            io.sockets.emit('system', nickname);
+            io.sockets.emit('system', nickname, users.length, 'login');
         };
     })
 });

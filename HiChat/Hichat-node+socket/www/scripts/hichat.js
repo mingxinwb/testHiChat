@@ -41,6 +41,15 @@ Chat.prototype = {
             document.title = 'HiChat | ' + nickname;
             document.getElementById('loginWrapper').style.display = 'none';
             document.getElementById('messageInput').focus();
-        })
+        });
+
+        //log out and emit all other left users
+        this.socket.on('system', (name, usercount, type) => {
+            const msg = name + (type == 'login' ? ' joined' : ' left');
+            const p = document.createElement('p');
+            p.textContent = msg;
+            document.getElementById('historyMsg').appendChild(p);
+            document.getElementById('status').textContent = usercount + (usercount > 1 ? ' users' : ' user') + ' online';
+        });
     }
 };
