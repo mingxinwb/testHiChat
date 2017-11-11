@@ -1,0 +1,127 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <meta name="author" content="Xintong">
+        <meta name="description" content="hichat | a simple chat app built with nodejs and websocket">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>HiChat</title>
+        <link rel="stylesheet" href="./styles/main.css">
+        <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
+        <link rel="icon" href="./favicon.ico" type="image/x-icon">
+    </head>
+    <body>
+        <div class="wrapper">
+            <div class="banner">
+                <h1>HiChat :)</h1>
+                <span id="status"></span>
+            </div>
+            <div id="historyMsg">
+            </div>
+            <div class="controls">
+                <div class="items">
+                    <input id="colorStyle" type="color" placeholder="#000000" title="font color" />
+                    <input id="emoji" type="button" value="emoji" title="emoji" />
+                    <label for="sedImage" class="imageLabel">
+                        <input type="button" value="image" />
+                        <input id="sendImage" type="file" value="image" />
+                    </label>
+                    <input id="clearBtn" type="button" value="clear" title="clear screen" />
+                </div>
+                <textarea id="messageInput" placeholder="enter to send"></textarea>
+                <input id="sendBtn" type="button" value="SEND" />
+                <div id="emojiWrapper"></div>
+            </div>
+        </div>
+        <div id="loginWrapper">
+            <p id="info">connecting to server...</p>
+            <div id="nickWrapper">
+                <input id="nicknameInput" type="text" placeholder="nickname" />
+                <input id="loginBtn" type="button" value="OK" />
+            </div>
+        </div>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="/scripts/hichat.js"></script>
+    </body>
+</html>
+
+<!-- for test about socket.io
+<html> 
+    <head>
+        <title>Test HiChat</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            body {
+                font: 13px Helvetica, Arial;
+            }
+            form {
+                background: #000;
+                padding: 3px;
+                position: fixed;
+                bottom: 0;
+                width: 100%;
+            }
+            form input {
+                border: 0;
+                padding: 10px;
+                width: 90%;
+                margin-right: 0.5%;
+            }
+            form button {
+                width: 9%;
+                background: rgb(130, 224, 225);
+                border: none;
+                padding: 10px;
+            }
+            #messages {
+                list-style-type: none;
+                margin: 0;
+                padding: 0;
+            }
+            #messages li {
+                padding: 5px 10px;
+            }
+            #messages li:nth-child(odd) {
+                background: #eee;
+            }
+        </style>
+    </head>
+    <body>
+        <ul id="messages"></ul>
+        <form action="">
+            <input id="m" autocomplete="off" />
+            <button id="sendBtn" type="button">SEND</button>
+        </form>
+    </body>    
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+        $(() => {
+            // emit chat message to server
+            const socket = io();
+            $('form').submit(() => {
+                socket.emit('chat message', $('#m').val());
+                $('#m').val('');
+                return false;
+            });
+
+            socket.on('chat message', (msg) => {
+                $('#messages').append($('<li>').text(msg));
+            });
+        });
+
+        const button = document.getElementById('sendBtn');
+        button.onclick = () => {
+            console.log('I have pushed the send button.');
+            
+            const socket = io();
+            socket.emit('pushBtn', 'lala push');
+        };
+    </script>
+</html>
+-->
