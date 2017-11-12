@@ -114,6 +114,28 @@ Chat.prototype = {
                 messageInput.value = messageInput.value + '[emoji:' +target.title + ']';
             };
         }, false);
+
+        // send nickname by pressing enter button
+        document.getElementById('nicknameInput').addEventListener('keyup', function(e) {
+            if (e.keyCode == 13) {
+                var nickName = document.getElementById('nicknameInput').value;
+                if (nickName.trim().length !=0) {
+                    that.socket.emit('login', nickName);
+                };
+            };
+        }, false);
+
+        // send msg by pressing enter button
+        document.getElementById('messageInput').addEventListener('keyup', function(e) {
+            var messageInput = document.getElementById('messageInput')
+            var msg = messageInput.value;
+            var color = document.getElementById('colorStyle').value;
+            if (e.keyCode == 13 && msg.trim().length !=0) {
+                messageInput.value = '';
+                that.socket.emit('postMsg', msg, color);
+                that._displayNewMsg('me', msg, color);
+            };
+        }, false);
     },
 
     _displayNewMsg: function(user, msg, color) {
