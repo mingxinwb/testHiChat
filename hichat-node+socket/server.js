@@ -33,8 +33,8 @@ io.on('connection', (socket) => {
         };
     });
 
-    socket.on('postMsg', (msg) => {
-        socket.broadcast.emit('newMsg', socket.nickname, msg);
+    socket.on('postMsg', (msg, color) => {
+        socket.broadcast.emit('newMsg', socket.nickname, msg, color);
     });
 
     socket.on('img', (imgData) => {

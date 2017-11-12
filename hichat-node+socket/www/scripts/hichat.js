@@ -1,5 +1,5 @@
-window.onload = () => {
-    const chat = new Chat();
+window.onload = function() {
+    var chat = new Chat();
     chat.init();
 };
 
@@ -8,11 +8,11 @@ var Chat = function() {
 };
 
 Chat.prototype = {
-    init: () => {
-        const that = this;
+    init: function() {
+        var that = this;
 
         this.socket = io.connect();
-        this.socket.on('connect', () => {
+        this.socket.on('connect', function() {
             console.log('client connected to server now.');
             document.getElementById('info').textContent = 'get yourself a nickname :)';
             document.getElementById('nickWrapper').style.display = 'block';
@@ -20,8 +20,8 @@ Chat.prototype = {
         });
 
         // set nickname
-        document.getElementById('loginBtn').addEventListener('click', () => {
-            const nickname = document.getElementById('nicknameInput').value;
+        document.getElementById('loginBtn').addEventListener('click', function() {
+            var nickname = document.getElementById('nicknameInput').value;
             if (nickname.trim().length !=0) {
                 that.socket.emit('login', nickname);
             } else {
@@ -30,13 +30,13 @@ Chat.prototype = {
         }, false);
 
         // nickname existed
-        this.socket.on('nickExisted', () => {
+        this.socket.on('nickExisted', function() {
             document.getElementById('info').textContent = 'oops...nickname is taken, choose another pls';
         });
 
         // log in successed, remove loginWrapper, can chat now
-        this.socket.on('loginSuccess', () => {
-            const nickname = document.getElementById('nicknameInput').value
+        this.socket.on('loginSuccess', function() {
+            var nickname = document.getElementById('nicknameInput').value
             console.log(nickname + ' has login.');
             document.title = 'HiChat | ' + nickname;
             document.getElementById('loginWrapper').style.display = 'none';
@@ -44,55 +44,56 @@ Chat.prototype = {
         });
 
         // log out and emit all other left users
-        this.socket.on('system', (name, usercount, type) => {
-            const msg = name + (type == 'login' ? ' joined' : ' left');
-            Chat.prototype._displayNewMsg('system', msg, 'red');
+        this.socket.on('system', function(name, usercount, type) {
+            var msg = name + (type == 'login' ? ' joined' : ' left');
+            that._displayNewMsg('system', msg, 'red');
             document.getElementById('status').textContent = usercount + (usercount > 1 ? ' users' : ' user') + ' online';
         });
          
-        // send msg to everyone
-        document.getElementById('sendBtn').addEventListener('click', () => {
-            const msgInput = document.getElementById('messageInput');
-            const msg = msgInput.value;
+        // send msg with color to everyone
+        document.getElementById('sendBtn').addEventListener('click', function() {
+            var msgInput = document.getElementById('messageInput');
+            var msg = msgInput.value;
+            var color = document.getElementById('colorStyle').value;
             msgInput.value = '';
             msgInput.focus();
             if (msg.trim().length !=0) {
-                that.socket.emit('postMsg', msg);
-                Chat.prototype._displayNewMsg('me', msg);
+                that.socket.emit('postMsg', msg, color);
+                that._displayNewMsg('me', msg, color);
             };
         }, false);
 
         // see other's msg
-        this.socket.on('newMsg', (user, msg) => {
-            Chat.prototype._displayNewMsg(user, msg);
+        this.socket.on('newMsg', function(user, msg, color) {
+            that._displayNewMsg(user, msg, color);
         });
 
         // send image
         document.getElementById('sendImage').addEventListener('change', function() {
             if (this.files.length !=0) {
-                const file = this.files[0];
-                const reader = new FileReader();
+                var file = this.files[0];
+                var reader = new FileReader();
                 if (!reader) {
                     Chat.prototype._displayNewMsg('system', "your browser doesn\'t support file reader", 'red');
                     this.value = '';
                     return;
                 };
-                reader.onload = (e) => {
+                reader.onload = function(e) {
                     this.value = '';
                     that.socket.emit('img', e.target.result);
-                    Chat.prototype._displayImage('me', e.target.result);
+                    that._displayImage('me', e.target.result);
                 };
                 reader.readAsDataURL(file);
             };
         }, false);
 
         // receive image
-        this.socket.on('newImg', (user,img) => {
-            Chat.prototype._displayImage(user, img);
+        this.socket.on('newImg', function(user,img) {
+            that._displayImage(user, img);
         });
 
         // add emoji
-        Chat.prototype._initialEmoji();
+        this._initialEmoji();
         document.getElementById('emoji').addEventListener('click', function(e) {
             var emojiwrapper = document.getElementById('emojiWrapper');
             emojiwrapper.style.display = 'block';
@@ -115,11 +116,11 @@ Chat.prototype = {
         }, false);
     },
 
-    _displayNewMsg: (user, msg, color) => {
-        const container = document.getElementById('historyMsg');
-        const msgToDisplay = document.createElement('p');
-        const date = new Date().toTimeString().substr(0, 8);
-        const msg = Chat.prototype._showEmoji(msg);
+    _displayNewMsg: function(user, msg, color) {
+        var container = document.getElementById('historyMsg');
+        var msgToDisplay = document.createElement('p');
+        var date = new Date().toTimeString().substr(0, 8);
+        var msg = Chat.prototype._showEmoji(msg);
 
         msgToDisplay.style.color = color || '#000';
         msgToDisplay.innerHTML = user + '<span class="timespan">(' + date + '): </span>' + msg;
@@ -127,10 +128,10 @@ Chat.prototype = {
         container.scrollTop = container.scrollHeight;
     },
 
-    _displayImage: (user, imgData, color) => {
-        const container = document.getElementById('historyMsg');
-        const msgToDisplay = document.createElement('p');
-        const date = new Date().toTimeString().substr(0, 8);
+    _displayImage: function(user, imgData, color) {
+        var container = document.getElementById('historyMsg');
+        var msgToDisplay = document.createElement('p');
+        var date = new Date().toTimeString().substr(0, 8);
         msgToDisplay.style.color = color || '#000';
         msgToDisplay.innerHTML = user + '<span class="timespan">(' + date + '): </span> <br/>' 
                                  + '<a href="' + imgData + '" target="_blank"><img src="' + imgData + '"/></a>';
@@ -138,7 +139,7 @@ Chat.prototype = {
         container.scrollTop = container.scrollHeight;
     },
 
-    _initialEmoji: () => {
+    _initialEmoji: function() {
         var emojiContainer = document.getElementById('emojiWrapper');
         var docFragment = document.createDocumentFragment();
         for (var i = 69; i > 0; i--) {
@@ -150,7 +151,7 @@ Chat.prototype = {
         emojiContainer.appendChild(docFragment);
     },
 
-    _showEmoji: () => {
+    _showEmoji: function(msg) {
         var match, result = msg;
         var reg = /\[emoji:\d+\]/g;
         var emojiIndex;
